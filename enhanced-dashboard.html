@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Dashboard | Modern UI</title>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --surface: #ffffff;
+            --background: #f1f5f9;
+            --text: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            min-height: 100vh;
+        }
+
+        /* Layout */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--surface);
+            height: 100vh;
+            position: fixed;
+            width: var(--sidebar-width);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 50;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-circle {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--primary);
+            border-radius: 0.75rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link:hover {
+            background: var(--background);
+            color: var(--text);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+        }
+
+        /* Header */
+        .top-bar {
+            background: var(--surface);
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-container {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            padding-left: 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Table */
+        .table-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+
+        .data-table th {
+            background: var(--background);
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .data-table tr {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--background);
+        }
+
+        /* Status Badges */
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: #dcfce7;
+            color: var(--success);
+        }
+
+        .status-warning {
+            background: #fef3c7;
+            color: var(--warning);
+        }
+
+        .status-error {
+            background: #fee2e2;
+            color: var(--error);
+        }
+
+        /* Notifications Panel */
+        .notifications-panel {
+            position: fixed;
+            right: -300px;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: var(--surface);
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 100;
+            padding: 1.5rem;
+        }
+
+        .notifications-panel.active {
+            right: 0;
+        }
+
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .notification-item:hover {
+            background: var(--background);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                width: 100%;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Menu Toggle */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        /* Interactive Elements */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .btn:hover {
+            background: var(--background);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-circle"></div>
+                <h1 style="font-size: 1.25rem; font-weight: 600;">Dashboard</h1>
+            </div>
+
+            <nav>
+                <a href="#" class="nav-link active">📊 Dashboard</a>
+                <a href="#" class="nav-link">📈 Analytics</a>
+                <a href="#" class="nav-link">👥 Customers</a>
+                <a href="#" class="nav-link">📦 Products</a>
+                <a href="#" class="nav-link">📑 Reports</a>
+                <a href="#" class="nav-link">⚙️ Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search...">
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn" onclick="toggleNotifications()">
+                        🔔 Notifications
+                    </button>
+                    <button class="btn">
+                        👤 John Doe
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 style="color: var(--text-secondary); font-size: 0.875rem;">Revenue</h3>
+                    <p style="font-size: 1.5rem; font-weight: 600; margin: 0.5rem 0;">$24,500</p>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="color: var(--success);">↑ 12%</span>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">vs last month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h3 style="color: var(--text-secondary); font-size: 0.875rem;">Active Users</h3>
+                    <p style="font-size: 1.5rem; font-weight: 600; margin: 0.5rem 0;">1,234</p>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="color: var(--success);">↑ 8%</span>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">vs last month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h3 style="color: var(--text-secondary); font-size: 0.875rem;">Conversion Rate</h3>
+                    <p style="font-size: 1.5rem; font-weight: 600; margin: 0.5rem 0;">3.24%</p>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="color: var(--error);">↓ 2%</span>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">vs last month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h3 style="color: var(--text-secondary); font-size: 0.875rem;">Orders</h3>
+                    <p style="font-size: 1.5rem; font-weight: 600; margin: 0.5rem 0;">856</p>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="color: var(--success);">↑ 15%</span>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">vs last month</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">Revenue Trends</h3>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+
+                <div class="chart-card">
+                    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">User Activity</h3>
+                    <canvas id="userChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Orders Table -->
+            <div class="table-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1rem; font-weight: 600;">Recent Orders</h3>
+                    <button class="btn btn-primary">View All</button>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Product</th

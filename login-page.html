@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Modern UI</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --surface: #ffffff;
+            --background: #f1f5f9;
+            --text: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .login-card {
+            background: var(--surface);
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            animation: slideUp 0.3s ease;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .floating-label {
+            position: absolute;
+            left: 1rem;
+            top: 0.75rem;
+            pointer-events: none;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .input:focus ~ .floating-label,
+        .input:not(:placeholder-shown) ~ .floating-label {
+            transform: translateY(-1.4rem);
+            font-size: 0.75rem;
+            color: var(--primary);
+            background: var(--surface);
+            padding: 0 0.25rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem;">Welcome back</h2>
+        <form action="dashboard.html" method="POST">
+            <div class="input-group">
+                <input type="email" class="input" placeholder=" " required>
+                <label class="floating-label">Email address</label>
+            </div>
+            <div class="input-group">
+                <input type="password" class="input" placeholder=" " required>
+                <label class="floating-label">Password</label>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox"> Remember me
+                </label>
+                <a href="forgot-password.html" class="link">Forgot password?</a>
+            </div>
+            <button type="submit" class="btn btn-primary">Sign in</button>
+        </form>
+        <p style="text-align: center; margin-top: 1.5rem;">
+            Don't have an account? 
+            <a href="signup.html" class="link">Sign up</a>
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | Modern UI</title>
+    <style>
+        /* Core styles from previous pages */
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --surface: #ffffff;
+            --background: #f1f5f9;
+            --text: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+        }
+
+        /* Settings Specific Styles */
+        .settings-container {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 2rem;
+        }
+
+        .settings-nav {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            position: sticky;
+            top: 1.5rem;
+            height: fit-content;
+        }
+
+        .settings-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            margin-bottom: 0.25rem;
+            transition: all 0.2s;
+        }
+
+        .settings-nav-link:hover {
+            background: var(--background);
+        }
+
+        .settings-nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .settings-section {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .toggle {
+            position: relative;
+            width: 3rem;
+            height: 1.5rem;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: .4s;
+            border-radius: 1rem;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 1.25rem;
+            width: 1.25rem;
+            left: 0.125rem;
+            bottom: 0.125rem;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(1.5rem);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .connected-account {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .account-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+
+        .danger-zone {
+            border: 1px solid var(--error);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+        }
+
+        .danger-zone .btn {
+            background: var(--error);
+            color: white;
+        }
+
+        @media (max-width: 1024px) {
+            .settings-container {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-nav {
+                position: static;
+                margin-bottom: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar from previous pages -->
+    <aside class="sidebar">
+        <!-- Sidebar content -->
+    </aside>
+
+    <main class="main-content" style="padding: 1.5rem;">
+        <h1 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 2rem;">Settings</h1>
+
+        <div class="settings-container">
+            <!-- Settings Navigation -->
+            <nav class="settings-nav">
+                <a href="#account" class="settings-nav-link active">👤 Account</a>
+                <a href="#security" class="settings-nav-link">🔒 Security</a>
+                <a href="#notifications" class="settings-nav-link">🔔 Notifications</a>
+                <a href="#privacy" class="settings-nav-link">🛡️ Privacy</a>
+                <a href="#connected" class="settings-nav-link">🔗 Connected Accounts</a>
+                <a href="#data" class="settings-nav-link">💾 Data & Storage</a>
+            </nav>
+
+            <!-- Settings Content -->
+            <div class="settings-content">
+                <!-- Account Settings -->
+                <section id="account" class="settings-section">
+                    <div class="section-header">
+                        <h2 style="font-size: 1.25rem; font-weight: 600;">Account Settings</h2>
+                        <button class="btn btn-primary">Save Changes</button>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Username</label>
+                        <input type="text" class="input" value="johndoe">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Email</label>
+                        <input type="email" class="input" value="john.doe@example.com">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Language</label>
+                        <select class="input">
+                            <option>English</option>
+                            <option>Spanish</option>
+                            <option>French</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Time Zone</label>
+                        <select class="input">
+                            <option>UTC-8 (Pacific Time)</option>
+                            <option>UTC-5 (Eastern Time)</option>
+                            <option>UTC+0 (GMT)</option>
+                        </select>
+                    </div>
+                </section>
+
+                <!-- Security Settings -->
+                <section id="security" class="settings-section">
+                    <div class="section-header">
+                        <h2 style="font-size: 1.25rem; font-weight: 600;">Security Settings</h2>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h3 style="font-size: 1rem; font-weight: 500;">Two-Factor Authentication</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                                Add an extra layer of security to your account
+                            </p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h3 style="font-size: 1rem; font-weight: 500;">Login History</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                                View and manage your active sessions
+                            </p>
+                        </div>
+                        <button class="btn btn-secondary">View History</button>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h3 style="font-size: 1rem; font-weight: 500;">Password</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                                Last changed 3 months ago
+                            </p>
+                        </div>
+                        <button class="btn btn-secondary">Change Password</button>
+                    </div>
+                </section>
+
+                <!-- Notifications -->
+                <section id="notifications" class="settings-section">
+                    <div class="section-header">
+                        <h2 style="font-size: 1.25rem; font-weight: 600;">Notification Preferences</h2>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h3 style="font-size: 1rem; font-weight: 500;">Email Notifications</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                                Receive email updates about your account activity
+                            </p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h3 style="font-size: 1rem; font-weight: 500;">Push Notifications</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                                Receive push notifications on your devices
+                            </p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Connected Accounts -->
+                <section id="connected" class="settings-section">
+                    <div class="section-header">
+                        <h2 style="font-size: 1.25rem; font-weight: 600;">Connected Accounts</h2>
+                    </div>
+
+                    <div class="connected-account">
+                        <div class="account-icon" style="background: #1DA1F2; color: white;">𝕏</div>
+                        <div style="flex: 1">
+                            <h3 style="font-size: 1rem; font-weight: 500;">Twitter</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                                Connected
+                            </p>
+                        </div>
+                        <button class="btn btn-secondary">Disconnect</button>
+                    </div>
+
+                    <div class="connected-account">
+                        <div class="account-icon" style="background: #4267B2; color: white;">f</div>
+                        <div style="flex: 1">
+                            <h3 style="font-size: 1rem; font-weight: 500;">Facebook</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                                Not connected
+                            </p>
+                        </div>
+                        <button class="btn btn-primary">Connect</button>
+                    </div>
+                </section>
+
+                <!-- Data & Storage -->
+                <section id="data" class="settings-section">
+                    <div class="section-header">
+                        <h2 style="font-size: 1.25rem; font-weight: 600;">Data & Storage</h2>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h3 style="font-size: 1rem; font-weight: 500;">Data Export</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                                Download a copy of your data
+                            </p>
+                        </div>
+                        <button class="btn btn-secondary">Export Data</button>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <div class="danger-zone">
+                            <h3 style="color: var(--error); font-size: 1rem; font-weight: 500; margin-bottom: 0.5rem;">
+                                Danger Zone
+                            </h3>
+                            <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">
+                                Once you delete your account, there is no going back. Please be certain.
+                            </p>
+                            <button class="btn">Delete Account</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Settings Navigation
+        const navLinks = document.querySelectorAll('.settings-nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Smooth scroll to section
+                const section = document.querySelector(link.getAttribute('href'));
+                section.scrollIntoView({ behavior: 'smooth' });
+            });
+        

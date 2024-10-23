@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Modern UI</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --surface: #ffffff;
+            --background: #f1f5f9;
+            --text: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #22c55e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .signup-card {
+            background: var(--surface);
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            animation: slideUp 0.3s ease;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            background: var(--surface);
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .floating-label {
+            position: absolute;
+            left: 1rem;
+            top: 0.75rem;
+            pointer-events: none;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            background: var(--surface);
+            padding: 0 0.25rem;
+        }
+
+        .input:focus ~ .floating-label,
+        .input:not(:placeholder-shown) ~ .floating-label {
+            transform: translateY(-1.4rem) scale(0.85);
+            color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .password-requirements {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+            transition: color 0.2s;
+        }
+
+        .requirement::before {
+            content: '';
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            transition: background 0.2s;
+        }
+
+        .requirement.valid {
+            color: var(--success);
+        }
+
+        .requirement.valid::before {
+            background: var(--success);
+        }
+
+        @keyframes slideUp {
+            from { 
+                transform: translateY(20px); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1; 
+            }
+        }
+
+        /* Form validation styles */
+        .input.error {
+            border-color: #ef4444;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Checkbox styles */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        .checkbox-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-card">
+        <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem;">Create an account</h2>
+        <form action="verify-otp.html" method="POST" id="signupForm">
+            <div class="input-group">
+                <input type="text" class="input" placeholder=" " required>
+                <label class="floating-label">Full name</label>
+            </div>
+            <div class="input-group">
+                <input type="email" class="input" placeholder=" " required>
+                <label class="floating-label">Email address</label>
+            </div>
+            <div class="input-group">
+                <input type="password" class="input" placeholder=" " required id="password">
+                <label class="floating-label">Password</label>
+                <div class="password-requirements">
+                    <div class="requirement" data-requirement="length">At least 8 characters</div>
+                    <div class="requirement" data-requirement="number">Contains a number</div>
+                    <div class="requirement" data-requirement="special">Contains a special character</div>
+                </div>
+            </div>
+            <div class="input-group">
+                <input type="password" class="input" placeholder=" " required id="confirmPassword">
+                <label class="floating-label">Confirm password</label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="terms" required>
+                <label for="terms" class="checkbox-label">
+                    I agree to the <a href="#" class="link">Terms of Service</a> and <a href="#" class="link">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create account</button>
+        </form>
+        <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary);">
+            Already have an account? 
+            <a href="login.html" class="link">Sign in</a>
+        </p>
+    </div>
+
+    <script>
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const requirements = document.querySelectorAll('.requirement');
+        const form = document.getElementById('signupForm');
+
+        password.addEventListener('input', validatePassword);
+        confirmPassword.addEventListener('input', validateConfirmPassword);
+
+        function validatePassword() {
+            const value = password.value;
+            
+            // Length check
+            if(value.length >= 8) {
+                document.querySelector('[data-requirement="length"]').classList.add('valid');
+            } else {
+                document.querySelector('[data-requirement="length"]').classList.remove('valid');
+            }
+
+            // Number check
+            if(/\d/.test(value)) {
+                document.querySelector('[data-requirement="number"]').classList.add('valid');
+            } else {
+                document.querySelector('[data-requirement="number"]').classList.remove('valid');
+            }
+
+            // Special character check
+            if(/[!@#$%^&*]/.test(value)) {
+                document.querySelector('[data-requirement="special"]').classList.add('valid');
+            } else {
+                document.querySelector('[data-requirement="special"]').classList.remove('valid');
+            }
+
+            validateConfirmPassword();
+        }
+
+        function validateConfirmPassword() {
+            if(confirmPassword.value && password.value !== confirmPassword.value) {
+                confirmPassword.classList.add('error');
+                if(!confirmPassword.nextElementSibling.classList.contains('error-message')) {
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'error-message';
+                    errorMessage.textContent = 'Passwords do not match';
+                    confirmPassword.parentNode.appendChild(errorMessage);
+                }
+            } else {
+                confirmPassword.classList.remove('error');
+                const errorMessage = confirmPassword.parentNode.querySelector('.error-message');
+                if(errorMessage) {
+                    errorMessage.remove();
+                }
+            }
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if(isFormValid()) {
+                window.location.href = 'verify-otp.html';
+            }
+        });
+
+        function isFormValid() {
+            return password.value.length >= 8 && 
+                   /\d/.test(password.value) && 
+                   /[!@#$%^&*]/.test(password.value) &&
+                   password.value === confirmPassword.value;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP | Modern UI</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --surface: #ffffff;
+            --background: #f1f5f9;
+            --text: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #22c55e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .verify-card {
+            background: var(--surface);
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            animation: slideUp 0.3s ease;
+        }
+
+        .otp-container {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .otp-input {
+            width: 3.5rem;
+            height: 3.5rem;
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            font-size: 1.5rem;
+            text-align: center;
+            transition: all 0.2s;
+            background: var(--surface);
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .otp-input.filled {
+            border-color: var(--success);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .timer {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .verify-progress {
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin-top: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .status-message {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            min-height: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="verify-card">
+        <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Verify your email</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            We've sent a verification code to your email address
+        </p>
+
+        <form id="otpForm">
+            <div class="otp-container">
+                <input type="text" maxlength="1" class="otp-input" autofocus>
+                <input type="text" maxlength="1" class="otp-input">
+                <input type="text" maxlength="1" class="otp-input">
+                <input type="text" maxlength="1" class="otp-input">
+                <input type="text" maxlength="1" class="otp-input">
+                <input type="text" maxlength="1" class="otp-input">
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="verifyButton" disabled>
+                Verify Code
+            </button>
+        </form>
+
+        <div class="status-message" id="statusMessage"></div>
+        <div class="verify-progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div id="resendContainer" style="text-align: center; margin-top: 1.5rem;">
+            <span style="color: var(--text-secondary);">Didn't receive the code? </span>
+            <a href="#" class="link" id="resendLink">Resend</a>
+        </div>
+        <div class="timer" id="timer"></div>
+    </div>
+
+    <script>
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const form = document.getElementById('otpForm');
+        const verifyButton = document.getElementById('verifyButton');
+        const statusMessage = document.getElementById('statusMessage');
+        const progressBar = document.getElementById('progressBar');
+        const resendLink = document.getElementById('resendLink');
+        const timerElement = document.getElementById('timer');
+        
+        let resendTimer = 30;
+
+        // Handle OTP input
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value) {
+                    input.classList.add('filled');
+                    if (index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    }
+                } else {
+                    input.classList.remove('filled');
+                }
+                
+                checkComplete();
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                    otpInputs[index - 1].classList.remove('filled');
+                }
+            });
+
+            // Allow only numbers
+            input.addEventListener('keypress', (e) => {
+                if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        function checkComplete() {
+            const isComplete = Array.from(otpInputs).every(input => input.value.length === 1);
+            verifyButton.disabled = !isComplete;
+        }
+
+        // Handle form submission
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const otp = Array.from(otpInputs).map(input => input.value).join('');
+            verifyButton.disabled = true;
+            statusMessage.textContent = 'Verifying...';
+            
+            // Simulate verification process
+            progressBar.style.width = '0%';
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    statusMessage.textContent = 'Verification successful!';
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                }
+            }, 50);
+        });
+
+        // Resend timer
+        function updateTimer() {
+            if (resendTimer > 0) {
+                timerElement.textContent = `Resend available in ${resendTimer} seconds`;
+                resendTimer--;
+                setTimeout(updateTimer, 1000);
+            } else {
+                timerElement.textContent = '';
+                resendLink.style.opacity = '1';
+                resendLink.style.pointerEvents = 'auto';
+            }
+        }
+
+        resendLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (resendTimer <= 0) {
+                resendTimer = 30;
+                resendLink.style.opacity = '0.5';
+                resendLink.style.pointerEvents = 'none';
+                updateTimer();
+                statusMessage.textContent = 'New code sent!';
+            }
+        });
+
+        updateTimer();
+    </script>
+</body>
+</html>

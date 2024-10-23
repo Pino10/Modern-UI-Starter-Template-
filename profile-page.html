@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Modern UI</title>
+    <style>
+        /* Previous core styles remain the same */
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --surface: #ffffff;
+            --background: #f1f5f9;
+            --text: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+        }
+
+        /* Profile Specific Styles */
+        .profile-header {
+            background: var(--surface);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .avatar-upload {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .avatar-upload:hover {
+            background: var(--background);
+        }
+
+        .profile-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .tab-container {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            color: var(--primary);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .activity-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: var(--background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-settings {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle {
+            position: relative;
+            width: 3rem;
+            height: 1.5rem;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: .4s;
+            border-radius: 1rem;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 1.25rem;
+            width: 1.25rem;
+            left: 0.125rem;
+            bottom: 0.125rem;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(1.5rem);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .search-bar {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            padding-left: 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Using the same sidebar from dashboard -->
+    <aside class="sidebar">
+        <!-- Sidebar content remains the same -->
+    </aside>
+
+    <main class="main-content">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                JD
+                <div class="avatar-upload" title="Upload new picture">
+                    📸
+                </div>
+            </div>
+            <div>
+                <h1 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;">John Doe</h1>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Senior Developer</p>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-primary">Edit Profile</button>
+                    <button class="btn">View Public Profile</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-container">
+            <div class="tabs">
+                <button class="tab active">Overview</button>
+                <button class="tab">Activity</button>
+                <button class="tab">Settings</button>
+                <button class="tab">Security</button>
+            </div>
+
+            <!-- Overview Tab -->
+            <div class="profile-info-grid">
+                <div class="info-card">
+                    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1.5rem;">Personal Information</h3>
+                    <div class="input-group">
+                        <label class="input-label">Full Name</label>
+                        <input type="text" class="input" value="John Doe">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Email</label>
+                        <input type="email" class="input" value="john.doe@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Phone</label>
+                        <input type="tel" class="input" value="+1 (555) 123-4567">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Location</label>
+                        <input type="text" class="input" value="San Francisco, CA">
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1.5rem;">Account Settings</h3>
+                    <div class="notification-settings">
+                        <div>
+                            <h4 style="font-size: 0.875rem; font-weight: 500;">Email Notifications</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.875rem;">Receive emails about your account activity</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="notification-settings">
+                        <div>
+                            <h4 style="font-size: 0.875rem; font-weight: 500;">SMS Notifications</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.875rem;">Receive text messages for important updates</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="info-card">
+                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1.5rem;">Recent Activity</h3>
+                
+                <div class="activity-item">
+                    <div class="activity-icon">📝</div>
+                    <div>
+                        <p style="font-size: 0.875rem; font-weight: 500;">Updated profile information</p>
+                        <p style="color: var(--text-secondary); font-size: 0.875rem;">2 hours ago</p>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon">🔒</div>
+                    <div>
+                        <p style="font-size: 0.875rem; font-weight: 500;">Changed password</p>
+                        <p style="color: var(--text-secondary); font-size: 0.875rem;">Yesterday</p>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon">📊</div>
+                    <div>
+                        <p style="font-size: 0.875rem; font-weight: 500;">Viewed analytics dashboard</p>
+                        <p style="color: var(--text-secondary); font-size: 0.875rem;">2 days ago</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Tab Switching
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Profile Picture Upload
+        const avatarUpload = document.querySelector('.avatar-upload');
+        avatarUpload.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    // Handle file upload
+                    console.log('File selected:', file.name);
+                }
+            };
+            input.click();
+        });
+
+        // Toggle Switches
+        const toggles = document.querySelectorAll('.toggle input');
+        toggles.forEach(toggle => {
+            toggle.addEventListener('change', (e) => {
+                // Handle toggle change
+                console.log('Toggle changed:', e.target.checked);
+            });
+        });
+    </script>
+</body>
+</html>
